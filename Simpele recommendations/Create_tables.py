@@ -19,6 +19,15 @@ def create_tables():
         FOREIGN KEY (product_id) references products(id)
         )
         ''',
+        '''
+        CREATE TABLE cart_recommendations
+        (
+        product_cart_id varchar,
+        product_recommendation_id varchar,
+        FOREIGN KEY (product_cart_id) references products(id),
+        FOREIGN KEY (product_recommendation_id) references products(id)
+        )
+        '''
     )
 
 

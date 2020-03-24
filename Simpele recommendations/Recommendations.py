@@ -27,10 +27,8 @@ def insert_into_postgres(table, values):
         connection = psycopg2.connect("dbname = OpisOp user=postgres password='wachtwoord'")
         cursor = connection.cursor()
 
-
         if table == "most_bought_day":
             cursor.execute("""INSERT INTO most_bought_day VALUES({},{})""".format(values[0], values[1]))
-
 
         connection.commit()
         count = cursor.rowcount
@@ -39,7 +37,7 @@ def insert_into_postgres(table, values):
     except (Exception, psycopg2.Error) as error:
         print("Failed to insert record into table", error)
 
-def recommendation():
+def most_bought_daily():
     #   Je geeft 2 data op van de dagen waartussen je de records wil krijgen
     #   Wil je de records van 1 dag, bijvoorbeeld 2017-12-10 dan doe je get('2017-12-10', '2017-12-11').
 
@@ -62,7 +60,3 @@ def recommendation():
             if a == item:
                 data.remove(a)
 
-
-
-
-recommendation()
