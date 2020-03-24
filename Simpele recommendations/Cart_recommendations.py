@@ -46,10 +46,9 @@ def cart_recommendation():
 
     for product_cart in records:
         for product_recommend in records:
-            # [3] = targetaudience, [4] = Category, [9] = Sellingprice
-            if product_cart != product_recommend and product_recommend[4] == product_cart[4] and \
-                    int(product_cart[9])-5 < int(product_recommend[9]) < int(product_cart[9])+5 and \
-                    product_recommend[3] == product_cart[3] \
+            # Categorie moet hetzelfde zijn, maar subcategorie anders
+            if product_cart != product_recommend and product_cart[4] == product_recommend[4] and \
+                    product_cart[5] != product_recommend[5] \
                     and ([product_cart[0],product_recommend[0]]) not in already_added \
                     and ([product_recommend[0],product_cart[0]]) not in already_added:
                 already_added.append([product_cart[0], product_recommend[0]])
