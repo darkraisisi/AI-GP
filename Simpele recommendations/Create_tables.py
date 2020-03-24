@@ -15,7 +15,8 @@ def create_tables():
         CREATE TABLE most_bought_day
         (
         product_id varchar,
-        day timestamp
+        day timestamp,
+        FOREIGN KEY (product_id) references products(id)
         )
         ''',
     )

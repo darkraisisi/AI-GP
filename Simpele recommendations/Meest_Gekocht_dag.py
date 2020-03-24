@@ -3,7 +3,7 @@ Bron 1: https://stackoverflow.com/questions/6987285/python-find-the-item-with-ma
 '''
 
 import psycopg2
-
+import datetime
 
 def get(date1, date2):
     try:
@@ -46,6 +46,14 @@ def recommendation():
     data = get('2017-12-18', '2017-12-19')
     dag = ("2017-12-18")
     data = [item for item, in data]
+
+    #   Dit werkt niet, maar als de op=op voordeelshop nog echt zou opereren zou dit gebruikt kunnen worden
+    #   In plaats van handmatig de dag in te voeren
+    # dag_ = datetime.date.today()
+    # dag_2 = datetime.date.today() + datetime.timedelta(days=1)
+    # data_ = get(dag_, dag_2)
+    # data_ = [item for item, in data_]
+
 
     for x in range(0,3):
         item = max(data,key=data.count)
