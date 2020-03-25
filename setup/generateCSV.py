@@ -113,9 +113,9 @@ def generateCSVSessions(fileNameString, mongoCollections, csvFieldNames, mongoFi
                 continue
             else:
                 try:
-                    sessionHasProductList.update({browserId:{'productList': multi_getattr(record,'order.products',[]), 'bought':multi_getattr(record,'has_sale',False)}})
+                    sessionHasProductList.update({browserId:{'productList': multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True)}})
                 except TypeError:
-                    sessionHasProductList.update({browserId[0]:{'productList': multi_getattr(record,'order.products',[]), 'bought':multi_getattr(record,'has_sale',False)}})
+                    sessionHasProductList.update({browserId[0]:{'productList': multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True)}})
 
             for x in range(len(csvFieldNames)):
                 if csvFieldNames[x] != 'profiles_id':
@@ -190,3 +190,4 @@ def generateAllCSV():
     ['sessions_profiles_id', 'bought'])
     print(f'It took {datetime.now() - startTime} seconds to write the profiles.')
     print(f'It took {datetime.now() - AbsoluteStartTime} seconds to write all the csv\'s.')
+generateAllCSV()
