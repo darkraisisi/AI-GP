@@ -19,12 +19,14 @@ class Recom(Resource):
     """ This class represents the REST API that provides the recommendations for
     the webshop. At the moment, the API simply returns a random set of products
     to recommend."""
-    def get(self, profileid, count):
-        print(self)
+    def get(self, profileid, count,functionName):
         print(profileid,count)
         """ This function represents the handler for GET requests coming in
         through the API. It currently returns a random sample of products. """
-        # Get collaborative recommendation
+        if functionName == 'collab':
+            return self.collab(profileid, count)
+
+    def collab(self, profileid, count):
         cursor.execute(f"""
         SELECT collab_recommendations.product_recommendation FROM collab_recommendations
         INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
@@ -34,7 +36,8 @@ class Recom(Resource):
         records = cursor.fetchone()
         print(records[0])
         return records[0], 200
+        
 
 # This method binds the Recom class to the REST API, to parse specifically
 # requests in the format described below.
-api.add_resource(Recom, "/<string:profileid>/<int:count>")
+api.add_resource(Recom, "/<string:profileid>/<int:count>/<string:functionName>")
