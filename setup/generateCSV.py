@@ -190,4 +190,3 @@ def generateAllCSV():
     ['sessions_profiles_id', 'bought'])
     print(f'It took {datetime.now() - startTime} seconds to write the profiles.')
     print(f'It took {datetime.now() - AbsoluteStartTime} seconds to write all the csv\'s.')
-generateAllCSV()

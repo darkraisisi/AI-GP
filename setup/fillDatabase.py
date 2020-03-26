@@ -3,7 +3,7 @@ import psycopg2
 def fill():
     c = psycopg2.connect("dbname=OpisOp user=postgres password=root")
     cur = c.cursor()
-    path = 'csv/new/'
+    path = 'setup/csv/'
     filenames = ['brand', 'products', 'profiles', 'sessions','cart']
 
     for filename in filenames:

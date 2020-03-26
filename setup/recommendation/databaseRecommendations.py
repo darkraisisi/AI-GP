@@ -9,7 +9,7 @@ def run():
                                 database="OpisOp")
     cursor = connection.cursor()
     with cursor as cursor:
-        cursor.execute(open("recommendation/recommendation.sql", "r", encoding='utf-8').read())
+        cursor.execute(open("setup/recommendation/recommendation.sql", "r", encoding='utf-8').read())
 
     connection.commit()
     cursor.close()
