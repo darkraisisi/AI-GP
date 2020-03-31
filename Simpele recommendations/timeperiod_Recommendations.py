@@ -4,6 +4,7 @@ Bron 1: https://stackoverflow.com/questions/6987285/python-find-the-item-with-ma
 
 import psycopg2
 import datetime
+from collections import Counter
 
 def get(date1, date2):
     try:
@@ -12,8 +13,9 @@ def get(date1, date2):
 
         postgreSQL_select_Query = "SELECT products_id FROM cart, sessions WHERE sessions_profiles_id = browser_id AND starttime BETWEEN "+"'"+date1+"'"+" AND "+"'"+date2+"'"
 
+
         cursor.execute(postgreSQL_select_Query)
-        print("Selecting rows from products table using cursor.fetchall")
+        print("Selecting rows table using cursor.fetchall")
         records = cursor.fetchall()
 
         return records
@@ -29,6 +31,9 @@ def insert_into_postgres(table, values):
 
         if table == "most_bought_day":
             cursor.execute("""INSERT INTO most_bought_day VALUES({},{})""".format(values[0], values[1]))
+
+        if table == "most_bought_period":
+            cursor.execute("""INSERT INTO most_bought_period VALUES({},{})""".format(values[0], values[1]))
 
         connection.commit()
         count = cursor.rowcount
@@ -52,11 +57,33 @@ def most_bought_daily():
     # data_ = get(dag_, dag_2)
     # data_ = [item for item, in data_]
 
+    mostcommon = Counter(data).most_common(3)
+    for x in mostcommon:
+        insert_into_postgres("most_bought_day", (x[0], "'" + dag + "'"))
 
-    for x in range(0,3):
-        item = max(data,key=data.count)
-        insert_into_postgres("most_bought_day", (item, "'"+dag+"'"))
-        for a in data:
-            if a == item:
-                data.remove(a)
 
+#   Tijdperiodes
+#   Jaargetijden: Lente(1 maart t/m 31 mei), Zomer(1 juni t/m 31 augustus), Herfst(1 september t/m 30 november), Winter(1 december t/m 28 februari)
+#   Speciale periodes: Sinterklaas(21 november t/m 5 december), Kerst (10 december t/m 25 december)
+def time_periods():
+    # Lente = ("Lente", ("2018-03-01","2018-05-31"))
+    # Zomer = ("Zomer",("2018-06-01","2018-08-31"))
+    # Herfst = ("Herfst", ("2018-09-01", "2018-11-30"))
+    # Winter = ("Winter", ("2017-12-01", "2018-02-28"))
+    # Sinterklaas = ("Sinterklaas", ("2018-11-21", "2018-12-05"))
+    # Kerst = ("Kerst", ("2018-12-10", "2018-12-25"))
+
+    periods = [("Lente", ("2018-03-01","2018-05-31")), ("Zomer",("2018-06-01","2018-08-31")), ("Herfst", ("2018-09-01", "2018-11-30")),
+               ("Winter", ("2017-12-01", "2018-02-28")), ("Sinterklaas", ("2018-11-21", "2018-12-05")),("Kerst", ("2018-12-10", "2018-12-25"))]
+
+    for period in periods:
+        data = get(period[1][0], period[1][1])
+        data = [item for item, in data]
+        period_name = period[0]
+
+        mostcommon = Counter(data).most_common(10)
+
+        for x in mostcommon:
+            insert_into_postgres("most_bought_period", (x[0], "'" + period_name + "'"))
+
+time_periods()
