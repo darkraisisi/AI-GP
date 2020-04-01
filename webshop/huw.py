@@ -228,7 +228,14 @@ class HUWebshop(object):
         service. At the moment, it only transmits the profile ID and the number
         of expected recommendations; to have more user information in the REST
         request, this function would have to change."""
-        resp = requests.get(self.recseraddress+"/"+session['profile_id']+"/"+str(count)+"/"+str(functionName))
+        # api.add_resource(Collab, "collab/<string:profileid>/<int:count>")
+        # http://127.0.0.1:5001/jsdfhsjkdfhksj123123/4
+        print(session['shopping_cart'])
+        if functionName == 'collab':
+            resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+str(count))
+        if functionName == 'cart':
+            resp = requests.get(self.recseraddress+"/cart/")
+
         if resp.status_code == 200:
             recs = eval(resp.content.decode())
             queryfilter = {"_id": {"$in": recs}}

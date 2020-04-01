@@ -43,5 +43,6 @@ class Cart(Resource):
         return 503
 
 
-api.add_resource(Collab, "/<string:profileid>/<int:count>")
-api.add_resource(Cart, "")
+api.add_resource(Collab, "collab/<string:profileid>/<int:count>")
+# api.add_resource(Cart, "cart/<string:productid>")
+api.add_resource(Cart, "cart/")
