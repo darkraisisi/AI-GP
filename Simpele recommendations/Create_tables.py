@@ -27,6 +27,14 @@ def create_tables():
         FOREIGN KEY (product_cart_id) references products(id),
         FOREIGN KEY (product_recommendation_id) references products(id)
         )
+        ''',
+        '''
+        CREATE TABLE most_bought_period
+        (
+        product_id varchar,
+        timeperiod varchar,
+        FOREIGN KEY (product_id) references products(id)
+        )
         '''
     )
 
