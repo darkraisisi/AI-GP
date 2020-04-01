@@ -15,18 +15,19 @@ api = Api(app)
 connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
 cursor = connection.cursor()
 
-class Recom(Resource):
-    """ This class represents the REST API that provides the recommendations for
-    the webshop. At the moment, the API simply returns a random set of products
-    to recommend."""
-    def get(self, profileid, count,functionName):
-        print(profileid,count)
-        """ This function represents the handler for GET requests coming in
-        through the API. It currently returns a random sample of products. """
-        if functionName == 'collab':
-            return self.collab(profileid, count)
-
-    def collab(self, profileid, count):
+class Collab(Resource):
+    def get(self, profileid, count):
+        # cursor.execute(f"""
+        # SELECT DISTINCT collab_recommendations.product_recommendation FROM collab_recommendations
+        # INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
+        # INNER JOIN sessions ON profiles.id = sessions.profiles_id
+        # INNER JOIN cart ON sessions.browser_id = cart.sessions_profiles_id
+        # INNER JOIN products ON products.id = cart.products_id
+        # WHERE profiles.id = '{profileid}'
+        # AND collab_recommendations.target_audience = products.targetaudience
+        # LIMIT 100
+        # """)
+        # Work in progress
         cursor.execute(f"""
         SELECT collab_recommendations.product_recommendation FROM collab_recommendations
         INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
@@ -36,8 +37,11 @@ class Recom(Resource):
         records = cursor.fetchone()
         print(records[0])
         return records[0], 200
-        
 
-# This method binds the Recom class to the REST API, to parse specifically
-# requests in the format described below.
-api.add_resource(Recom, "/<string:profileid>/<int:count>/<string:functionName>")
+class Cart(Resource):
+    def get(self):
+        return 503
+
+
+api.add_resource(Collab, "/<string:profileid>/<int:count>")
+api.add_resource(Cart, "")
