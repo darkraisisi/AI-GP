@@ -131,3 +131,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+Simpele recommendations/csv/recurrance.csv

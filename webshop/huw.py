@@ -230,11 +230,10 @@ class HUWebshop(object):
         request, this function would have to change."""
         # api.add_resource(Collab, "collab/<string:profileid>/<int:count>")
         # http://127.0.0.1:5001/jsdfhsjkdfhksj123123/4
-        print(session['shopping_cart'])
         if functionName == 'collab':
             resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+str(count))
         if functionName == 'cart':
-            resp = requests.get(self.recseraddress+"/cart/")
+            resp = requests.get(self.recseraddress+"/cart/"+session['profile_id'])
 
         if resp.status_code == 200:
             recs = eval(resp.content.decode())
@@ -296,7 +295,7 @@ class HUWebshop(object):
             product["itemcount"] = tup[1]
             i.append(product)
         return self.renderpackettemplate('shoppingcart.html',{'itemsincart':i,\
-            'r_products':self.recommendations(4), \
+            'r_products':self.recommendations(4,'cart'), \
             'r_type':list(self.recommendationtypes.keys())[2],\
             'r_string':list(self.recommendationtypes.values())[2]})
 
