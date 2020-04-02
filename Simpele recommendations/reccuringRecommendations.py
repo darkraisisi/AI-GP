@@ -81,5 +81,20 @@ def orderAndWriteRecurrance(userRecurringOrder,csvFieldNames,fileNameString):
                     AverageReturnTime = product['timeBetweenTotal']/product['amount']
                     writer.writerow({'profile_id':profileId,'product_id':productId,'average_return_time':AverageReturnTime,'amount_bought':product['amount']})
 
-userRecurringOrder = getProductReccurancetimeAllUser()
-orderAndWriteRecurrance(userRecurringOrder,['profile_id','product_id','average_return_time','amount_bought'],'Simpele recommendations/csv/recurrance.csv')
+def writeToDatabase(fileName):
+    c = psycopg2.connect("dbname=OpisOp user=postgres password=root")
+    cur = c.cursor()
+
+    with open(fileName, encoding='utf-8') as csvfile:
+        print("Copying {}...".format(fileName))
+        cur.copy_expert("COPY recurring_recommendations FROM STDIN DELIMITER ',' CSV HEADER", csvfile)
+        c.commit()
+
+    cur.close()
+    c.close()
+
+
+fileName = 'Simpele recommendations/csv/recurrance.csv'
+# userRecurringOrder = getProductReccurancetimeAllUser()
+# orderAndWriteRecurrance(userRecurringOrder,['profile_id','product_id','average_return_time','amount_bought'],fileName)
+writeToDatabase(fileName)

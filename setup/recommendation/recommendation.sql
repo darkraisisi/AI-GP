@@ -15,9 +15,9 @@ CREATE TABLE  content_recommendations(
 
 DROP TABLE IF EXISTS recurring_recommendations CASCADE;
 
-CREATE TABLE  ecurring_recommendations(
+CREATE TABLE  recurring_recommendations(
     profile_id VARCHAR(255),
     product_id VARCHAR(255),
-    average_return_time TIMESTAMP(0),
+    average_return_time interval(0),
     amount_bought VARCHAR(255)
 );

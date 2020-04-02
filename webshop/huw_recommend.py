@@ -42,6 +42,26 @@ class Cart(Resource):
     def get(self):
         return 503
 
+class Recurring(Resource):
+    def get(self,profileid,time):
+        cursor.execute(f"""
+        SELECT r.product_id
+        FROM recurring_recommendations as r
+        INNER JOIN products as p ON r.product_id = p.id
+        WHERE r.profile_id = '{profileid}'
+        ORDER BY amount_bought DESC
+        LIMIT {4}
+        """)
+        records = cursor.fetchall()
+        print(records)
+        _records = []
+        for i in records:
+            _records.append(i[0])
+        print(_records)
+        return _records, 200
+
+
 
 api.add_resource(Collab, "/collab/<string:profileid>/<int:count>")
 api.add_resource(Cart, "/cart/<string:productid>")
+api.add_resource(Recurring, "/reccuring/<string:profileid>/<string:time>")

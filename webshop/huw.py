@@ -3,6 +3,7 @@ import random, os, json, urllib.parse, requests
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
+from datetime import datetime
 
 # The secret key used for session encryption is randomly generated every time
 # the server is started up. This means all session data (including the 
@@ -234,6 +235,8 @@ class HUWebshop(object):
             resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+str(count))
         if functionName == 'cart':
             resp = requests.get(self.recseraddress+"/cart/"+session['profile_id'])
+        if functionName == 'reccuring':
+            resp = requests.get(self.recseraddress+"/reccuring/"+session['profile_id']+"/"+str(datetime.now()))
 
         if resp.status_code == 200:
             recs = eval(resp.content.decode())
@@ -272,7 +275,7 @@ class HUWebshop(object):
             'pend': skipindex + session['items_per_page'] if session['items_per_page'] > 0 else prodcount, \
             'prevpage': pagepath+str(page-1) if (page > 1) else False, \
             'nextpage': pagepath+str(page+1) if (session['items_per_page']*page < prodcount) else False, \
-            'r_products':self.recommendations(4), \
+            'r_products':self.recommendations(4,'reccuring'), \
             'r_type':list(self.recommendationtypes.keys())[0],\
             'r_string':list(self.recommendationtypes.values())[0]\
             })
