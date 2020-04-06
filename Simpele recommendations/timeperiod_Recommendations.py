@@ -53,8 +53,8 @@ def most_bought_daily():
     #   Je geeft 2 data op van de dagen waartussen je de records wil krijgen
     #   Wil je de records van 1 dag, bijvoorbeeld 2017-12-10 dan doe je get('2017-12-10', '2017-12-11').
 
-    data = get('2017-12-18', '2017-12-19')
-    dag = ("2017-12-18")
+    data = get('2017-12-27', '2017-12-28')
+    dag = ("2017-12-27")
     data = [item for item, in data]
 
     #   Dit werkt niet, maar als de op=op voordeelshop nog echt zou opereren zou dit gebruikt kunnen worden
@@ -64,12 +64,28 @@ def most_bought_daily():
     # data_ = get(dag_, dag_2)
     # data_ = [item for item, in data_]
 
+    average_prodid_amount = average_year()
+    average_prodidonly = []
 
 
+    for item in average_prodid_amount:
+        average_prodidonly.append(item[0])
 
-    mostcommon = Counter(data).most_common(3)
+    mostcommon = mostcommon = Counter(data).most_common(100)
+    products_added = 0
     for x in mostcommon:
-        insert_into_postgres("most_bought_day", (x[0], "'" + dag + "'"))
+        if products_added >= 3:
+            break
+
+        for item in average_prodid_amount:
+            if item[0] == x[0]:
+                current_average = item  # Het gemiddelde van het hele jaar in de vorm [prodid, aantal x gekocht]
+                break
+
+        if (x[1] * 365) > (current_average[1] * 2):
+            insert_into_postgres("most_bought_day", (x[0], "'"+dag+"'"))
+            products_added += 1
+
 
 
 #   Tijdperiodes
@@ -122,4 +138,4 @@ def time_periods():
 
 
 
-time_periods()
+most_bought_daily()
