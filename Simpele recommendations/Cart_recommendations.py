@@ -39,7 +39,7 @@ def insert_into_postgres(table, values):
 
 
 def cart_recommendation():
-    records = get("*", "products",'50')
+    records = get("*", "products",'1000')
 
     recommended_ids = []
     already_added = []

@@ -33,6 +33,7 @@ def create_tables():
         (
         product_id varchar,
         timeperiod varchar,
+        times_bought varchar,
         FOREIGN KEY (product_id) references products(id)
         )
         '''
