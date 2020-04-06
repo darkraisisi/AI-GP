@@ -33,7 +33,7 @@ def insert_into_postgres(table, values):
             cursor.execute("""INSERT INTO most_bought_day VALUES({},{})""".format(values[0], values[1]))
 
         if table == "most_bought_period":
-            cursor.execute("""INSERT INTO most_bought_period VALUES({},{},{})""".format(values[0], values[1], values[2]))
+            cursor.execute("""INSERT INTO most_bought_period VALUES({},{},{},{})""".format(values[0], values[1], values[2], values[3]))
 
         connection.commit()
         count = cursor.rowcount
@@ -112,16 +112,12 @@ def time_periods():
                     current_average = item   # Het gemiddelde van het hele jaar in de vorm [prodid, aantal x gekocht]
                     break
 
-            if x[0] not in average_prodidonly:
-                insert_into_postgres("most_bought_period", (x[0], "'" + period_name + "'", x[1]))
-                products_added += 1
-
-            elif period_name in seasons:
+            if period_name in seasons:
                 if x[1]*4 > current_average[1]*2:
-                    insert_into_postgres("most_bought_period", (x[0], "'" + period_name + "'", x[1]))
+                    insert_into_postgres("most_bought_period", (x[0], "'" + period_name + "'", x[1], (x[1]*4)/current_average[1]))
                     products_added += 1
             elif x[1]*24 > current_average[1]*2:
-                insert_into_postgres("most_bought_period", (x[0], "'" + period_name + "'", x[1]))
+                insert_into_postgres("most_bought_period", (x[0], "'" + period_name + "'", x[1], (x[1]*24)/current_average[1]))
                 products_added += 1
 
 
