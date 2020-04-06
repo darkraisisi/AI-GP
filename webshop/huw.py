@@ -3,6 +3,7 @@ import random, os, json, urllib.parse, requests
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
+from datetime import datetime
 
 # The secret key used for session encryption is randomly generated every time
 # the server is started up. This means all session data (including the 
@@ -228,7 +229,15 @@ class HUWebshop(object):
         service. At the moment, it only transmits the profile ID and the number
         of expected recommendations; to have more user information in the REST
         request, this function would have to change."""
-        resp = requests.get(self.recseraddress+"/"+session['profile_id']+"/"+str(count)+"/"+str(functionName))
+        # api.add_resource(Collab, "collab/<string:profileid>/<int:count>")
+        # http://127.0.0.1:5001/jsdfhsjkdfhksj123123/4
+        if functionName == 'collab':
+            resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+str(count))
+        if functionName == 'cart':
+            resp = requests.get(self.recseraddress+"/cart/"+session['profile_id'])
+        if functionName == 'reccuring':
+            resp = requests.get(self.recseraddress+"/reccuring/"+session['profile_id']+"/"+str(datetime.now()))
+
         if resp.status_code == 200:
             recs = eval(resp.content.decode())
             queryfilter = {"_id": {"$in": recs}}
@@ -266,7 +275,7 @@ class HUWebshop(object):
             'pend': skipindex + session['items_per_page'] if session['items_per_page'] > 0 else prodcount, \
             'prevpage': pagepath+str(page-1) if (page > 1) else False, \
             'nextpage': pagepath+str(page+1) if (session['items_per_page']*page < prodcount) else False, \
-            'r_products':self.recommendations(4), \
+            'r_products':self.recommendations(4,'reccuring'), \
             'r_type':list(self.recommendationtypes.keys())[0],\
             'r_string':list(self.recommendationtypes.values())[0]\
             })
@@ -289,7 +298,7 @@ class HUWebshop(object):
             product["itemcount"] = tup[1]
             i.append(product)
         return self.renderpackettemplate('shoppingcart.html',{'itemsincart':i,\
-            'r_products':self.recommendations(4), \
+            'r_products':self.recommendations(4,'cart'), \
             'r_type':list(self.recommendationtypes.keys())[2],\
             'r_string':list(self.recommendationtypes.values())[2]})
 

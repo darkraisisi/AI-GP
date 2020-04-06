@@ -15,18 +15,19 @@ api = Api(app)
 connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
 cursor = connection.cursor()
 
-class Recom(Resource):
-    """ This class represents the REST API that provides the recommendations for
-    the webshop. At the moment, the API simply returns a random set of products
-    to recommend."""
-    def get(self, profileid, count,functionName):
-        print(profileid,count)
-        """ This function represents the handler for GET requests coming in
-        through the API. It currently returns a random sample of products. """
-        if functionName == 'collab':
-            return self.collab(profileid, count)
-
-    def collab(self, profileid, count):
+class Collab(Resource):
+    def get(self, profileid, count):
+        # cursor.execute(f"""
+        # SELECT DISTINCT collab_recommendations.product_recommendation FROM collab_recommendations
+        # INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
+        # INNER JOIN sessions ON profiles.id = sessions.profiles_id
+        # INNER JOIN cart ON sessions.browser_id = cart.sessions_profiles_id
+        # INNER JOIN products ON products.id = cart.products_id
+        # WHERE profiles.id = '{profileid}'
+        # AND collab_recommendations.target_audience = products.targetaudience
+        # LIMIT 100
+        # """)
+        # Work in progress
         cursor.execute(f"""
         SELECT collab_recommendations.product_recommendation FROM collab_recommendations
         INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
@@ -36,8 +37,31 @@ class Recom(Resource):
         records = cursor.fetchone()
         print(records[0])
         return records[0], 200
-        
 
-# This method binds the Recom class to the REST API, to parse specifically
-# requests in the format described below.
-api.add_resource(Recom, "/<string:profileid>/<int:count>/<string:functionName>")
+class Cart(Resource):
+    def get(self):
+        return 503
+
+class Recurring(Resource):
+    def get(self,profileid,time):
+        cursor.execute(f"""
+        SELECT r.product_id
+        FROM recurring_recommendations as r
+        INNER JOIN products as p ON r.product_id = p.id
+        WHERE r.profile_id = '{profileid}'
+        ORDER BY amount_bought DESC
+        LIMIT {4}
+        """)
+        records = cursor.fetchall()
+        print(records)
+        _records = []
+        for i in records:
+            _records.append(i[0])
+        print(_records)
+        return _records, 200
+
+
+
+api.add_resource(Collab, "/collab/<string:profileid>/<int:count>")
+api.add_resource(Cart, "/cart/<string:productid>")
+api.add_resource(Recurring, "/reccuring/<string:profileid>/<string:time>")

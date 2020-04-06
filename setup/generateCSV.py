@@ -40,7 +40,8 @@ def generateBrandsCSV(fileNameString, mongoCollections, csvFieldNames, mongoFiel
             except:
                 brandDict.setdefault('None', len(brandDict)+1)
             if c % 10000 == 0:
-                    print(f"{c} records sorted...")
+                
+                print(f"{c} records sorted...")
 
         for item in brandDict:
             writer.writerow({csvFieldNames[0]:brandDict[item],csvFieldNames[1]:item})
@@ -65,7 +66,8 @@ def generateCSVProducts(fileNameString, mongoCollections, csvFieldNames, mongoFi
                     writeDict.update({ csvFieldNames[x]: brandId })
             writer.writerow(writeDict)
             if c % 10000 == 0:
-                    print(f"{c} records written...")
+                
+                print(f"{c} records written...")
 
     print(f"Finished creating {fileNameString}")
 
@@ -92,6 +94,7 @@ def generateCSVProfiles(fileNameString, mongoCollections, csvFieldNames, mongoFi
             writer.writerow(writeDict)
 
             if c % 10000 == 0:
+                
                 print(f"{c} records sorted...")
 
     print(f"Finished creating {fileNameString}")
@@ -113,9 +116,20 @@ def generateCSVSessions(fileNameString, mongoCollections, csvFieldNames, mongoFi
                 continue
             else:
                 try:
-                    sessionHasProductList.update({browserId:{'productList': multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True)}})
+                    if(sessionHasProductList.get(browserId)):
+                            sessionHasProductList[browserId]['cart'].append({'productList':multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True) })
+                    else:
+                        sessionHasProductList.update({browserId:{'cart':[]}})
+                        sessionHasProductList[browserId]['cart'].append({'productList':multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True) })
+
+
                 except TypeError:
-                    sessionHasProductList.update({browserId[0]:{'productList': multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True)}})
+                    if(sessionHasProductList.get(browserId[0])):
+                        sessionHasProductList[browserId[0]]['cart'].append({'productList':multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True) })
+                    else:
+                        sessionHasProductList.update({browserId[0]:{'cart':[]}})
+                        sessionHasProductList[browserId[0]]['cart'].append({'productList':multi_getattr(record,'order.products',[]), 'bought':int(multi_getattr(record,'has_sale',0) == True) })
+
 
             for x in range(len(csvFieldNames)):
                 if csvFieldNames[x] != 'profiles_id':
@@ -130,7 +144,8 @@ def generateCSVSessions(fileNameString, mongoCollections, csvFieldNames, mongoFi
             writer.writerow(writeDict)
 
             if c % 10000 == 0:
-                    print(f"{c} records written...")
+                
+                print(f"{c} records written...")
     print(f"Finished creating {fileNameString}")
     return sessionHasProductList
 
@@ -145,13 +160,15 @@ def generateCSVCart(fileNameString, sessionHasProductList, csvFieldNames, mongoF
             c+=1
             writeDict = {}
             writeDict.update({csvFieldNames[1]:buid})
-            writeDict.update({csvFieldNames[2]:sessionHasProductList[buid][csvFieldNames[2]]})
-            for product in sessionHasProductList[buid]['productList']:
-                writeDict.update({csvFieldNames[0]:product.get('id')})
-                writer.writerow(writeDict)
+            for carts in sessionHasProductList[buid]['cart']:
+                writeDict.update({csvFieldNames[2]:carts[csvFieldNames[2]]})
+                for product in carts['productList']:
+                    writeDict.update({csvFieldNames[0]:product.get('id')})
+                    writer.writerow(writeDict)
             
             if c % 10000 == 0:
-                    print(f"{c} records written...")
+                
+                print(f"{c} records written...")
     print(f"Finished creating {fileNameString}")
 
 
@@ -188,5 +205,5 @@ def generateAllCSV():
     generateCSVCart('setup/csv/cart.csv', sessionHasProductList,
     ['product_id', 'sessions_profiles_id', 'bought'],
     ['sessions_profiles_id', 'bought'])
-    print(f'It took {datetime.now() - startTime} seconds to write the profiles.')
+    print(f'It took {datetime.now() - startTime} seconds to write the carts.')
     print(f'It took {datetime.now() - AbsoluteStartTime} seconds to write all the csv\'s.')

@@ -12,3 +12,12 @@ CREATE TABLE  content_recommendations(
     category VARCHAR(255),
     product_recommendation VARCHAR(255)
 );
+
+DROP TABLE IF EXISTS recurring_recommendations CASCADE;
+
+CREATE TABLE  recurring_recommendations(
+    profile_id VARCHAR(255),
+    product_id VARCHAR(255),
+    average_return_time interval(0),
+    amount_bought VARCHAR(255)
+);
