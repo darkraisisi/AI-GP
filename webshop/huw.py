@@ -242,16 +242,27 @@ class HUWebshop(object):
         if functionName == 'collab':
             resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+str(count))
             return self.evalResponse(resp)
-
+            
         if functionName == 'cart':
-            resp = requests.get(self.recseraddress+"/cart/"+str(session['shopping_cart'][0][0]))
-            return self.evalResponse(resp)
+            resp = []
+            _ret = []
+            if session['shopping_cart']:
+                for i in session['shopping_cart']:
+                    partial_resp = requests.get(self.recseraddress+"/cart/"+str(i[0]))
+                    resp.append(partial_resp)
+                    
+                for i in resp:
+                    recs = eval(i.content.decode())
+                    _ret.append(recs)
 
+                queryfilter = {"_id": {"$in": _ret}}
+                querycursor = self.database.products.find(queryfilter, self.productfields)
+                return list(map(self.prepproduct, list(querycursor)))
+            else:
+                return []
         if functionName == 'reccuring':
             resp = requests.get(self.recseraddress+"/reccuring/"+session['profile_id']+"/"+str(datetime.now()))
             return self.evalResponse(resp)
-        
-        return []
 
     """ ..:: Full Page Endpoints ::.. """
 
@@ -282,7 +293,7 @@ class HUWebshop(object):
             'pend': skipindex + session['items_per_page'] if session['items_per_page'] > 0 else prodcount, \
             'prevpage': pagepath+str(page-1) if (page > 1) else False, \
             'nextpage': pagepath+str(page+1) if (session['items_per_page']*page < prodcount) else False, \
-            'r_products':self.recommendations(4,'reccuring'), \
+            'r_products':self.recommendations(4,'collab'), \
             'r_type':list(self.recommendationtypes.keys())[0],\
             'r_string':list(self.recommendationtypes.values())[0]\
             })

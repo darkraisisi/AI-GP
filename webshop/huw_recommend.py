@@ -37,7 +37,6 @@ class Collab(Resource):
         records = cursor.fetchone()
         cursor.close()
         connection.commit()
-        print(records[0])
         return records[0], 200
 
 class Cart(Resource):
@@ -52,7 +51,8 @@ class Cart(Resource):
         records = cursor.fetchone()
         cursor.close()
         connection.commit()
-        return [records[0]], 200
+        print(records[0])
+        return records[0], 200
 
 
 
