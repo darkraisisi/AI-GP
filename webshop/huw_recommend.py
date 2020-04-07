@@ -10,9 +10,9 @@ app = Flask(__name__)
 api = Api(app)
 
 # Since we are asked to pass a class rather than an instance of the class to the
-# add_resource method, we open the connection to the database outside of the 
+# add_resource method, we open the connection to the database outside of the
 # Recom class.
-connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
+connection = psycopg2.connect("dbname=OpisOp user=postgres password=wachtwoord")
 cursor = connection.cursor()
 
 class Collab(Resource):
@@ -39,29 +39,20 @@ class Collab(Resource):
         return records[0], 200
 
 class Cart(Resource):
-    def get(self):
-        return 503
+    def get(self, productid):
 
-class Recurring(Resource):
-    def get(self,profileid,time):
+        print(productid)
         cursor.execute(f"""
-        SELECT r.product_id
-        FROM recurring_recommendations as r
-        INNER JOIN products as p ON r.product_id = p.id
-        WHERE r.profile_id = '{profileid}'
-        ORDER BY amount_bought DESC
-        LIMIT {4}
+        SELECT product_recommendation_id
+        FROM cart_recommendations
+        WHERE product_cart_id = '{productid}'
+        LIMIT 1
         """)
-        records = cursor.fetchall()
-        print(records)
-        _records = []
-        for i in records:
-            _records.append(i[0])
-        print(_records)
-        return _records, 200
+        records = cursor.fetchone()
+        print(records[0])
+        return records[0], 200
 
 
 
 api.add_resource(Collab, "/collab/<string:profileid>/<int:count>")
 api.add_resource(Cart, "/cart/<string:productid>")
-api.add_resource(Recurring, "/reccuring/<string:profileid>/<string:time>")
