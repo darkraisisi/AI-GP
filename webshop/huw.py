@@ -248,7 +248,12 @@ class HUWebshop(object):
         # api.add_resource(Collab, "collab/<string:profileid>/<int:count>")
         # http://127.0.0.1:5001/jsdfhsjkdfhksj123123/4
         if functionName == 'collab':
-            resp = requests.get(self.recseraddress + "/collab/" + session['profile_id'] + "/" + str(count))
+            cat = ''
+            if(self.catdecode[request.__dict__['view_args']['cat1']]):
+                cat = str(self.catdecode[request.__dict__['view_args']['cat1']])
+            if (self.catdecode.get(request.__dict__['view_args'].get('cat2','_'),False)):
+                cat = str(self.catdecode[request.__dict__['view_args']['cat2']])
+            resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+cat)
             return self.evalResponse(resp)
 
         if functionName == 'cart':

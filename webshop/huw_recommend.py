@@ -15,8 +15,9 @@ api = Api(app)
 connection = psycopg2.connect("dbname=OpisOp user=postgres password=wachtwoord")
 
 class Collab(Resource):
-    def get(self, profileid, count):
+    def get(self, profileid, cat):
         cursor = connection.cursor()
+        print(cat)
         # cursor.execute(f"""
         # SELECT DISTINCT collab_recommendations.product_recommendation FROM collab_recommendations
         # INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
@@ -28,16 +29,13 @@ class Collab(Resource):
         # LIMIT 100
         # """)
         # Work in progress
-        cursor.execute(f"""
-        SELECT collab_recommendations.product_recommendation FROM collab_recommendations
-        INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
-        WHERE profiles.id = '{profileid}'
-        LIMIT {1}
-        """)
+        sql = "SELECT collab_recommendations.product_recommendation FROM collab_recommendations INNER JOIN profiles ON collab_recommendations.segment = profiles.segment WHERE profiles.id = %s AND collab_recommendations.category LIKE %s "
+        cursor.execute(sql,((profileid),'%'+cat+'%'))
         records = cursor.fetchone()
         cursor.close()
         connection.commit()
         return records[0], 200
+
 
 class Cart(Resource):
     def get(self, productid):
@@ -73,6 +71,6 @@ class Period(Resource):
         return record_output, 200
 
 
-api.add_resource(Collab, "/collab/<string:profileid>/<int:count>")
+api.add_resource(Collab, "/collab/<string:profileid>/<string:cat>")
 api.add_resource(Cart, "/cart/<string:productid>")
 api.add_resource(Period, "/period/")

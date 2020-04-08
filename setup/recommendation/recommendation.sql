@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS collab_recommendations CASCADE;
 CREATE TABLE  collab_recommendations(
     segment VARCHAR(255),
     target_audience VARCHAR(255),
+    category VARCHAR(255),
     product_recommendation VARCHAR(255)[]
 );
 

@@ -3,18 +3,31 @@ import csv
 from datetime import datetime
 import copy
 
-"""SELECT s.profiles_id, s.browser_id, s.starttime, c.products_id,COUNT(c.products_id) FROM sessions AS s
+# broken count
+"""
+SELECT s.profiles_id, s.browser_id, s.starttime, c.products_id,COUNT(c.products_id) FROM sessions AS s
 INNER JOIN cart as c ON s.browser_id = c.sessions_profiles_id
 WHERE s.profiles_id = '59ddc300a56ac6edb4ea36c1'
 GROUP BY s.profiles_id, s.browser_id, s.starttime, c.products_id
 -- ORDER BY s.profiles_id, s.browser_id, s.starttime
-ORDER BY c.products_id"""
+ORDER BY c.products_id
+"""
+
+# Intersting way of removing group by for broken count
+"""
+SELECT s.profiles_id, s.browser_id, s.starttime, c.products_id, COUNT(c.products_id) OVER() FROM sessions AS s
+INNER JOIN cart as c ON s.browser_id = c.sessions_profiles_id
+WHERE s.profiles_id = '59ddc300a56ac6edb4ea36c1'
+-- GROUP BY s.profiles_id, s.browser_id, s.starttime, c.products_id
+-- ORDER BY s.profiles_id, s.browser_id, s.starttime
+ORDER BY c.products_id
+"""
 
 """
 SELECT s.profiles_id, s.browser_id, s.starttime, c.products_id FROM sessions AS s
-    INNER JOIN cart as c ON s.browser_id = c.sessions_profiles_id
-    WHERE s.profiles_id = '59ddc300a56ac6edb4ea36c1'
-    ORDER BY s.profiles_id, s.browser_id, s.starttime, c.products_id
+INNER JOIN cart as c ON s.browser_id = c.sessions_profiles_id
+WHERE s.profiles_id = '59ddc300a56ac6edb4ea36c1'
+ORDER BY s.profiles_id, s.browser_id, s.starttime, c.products_id
 """
 
 """
@@ -54,13 +67,15 @@ def getProductReccurancetimeAllUser():
             # check if this product exist if so add 1 instead of overwriting
             product = userRecurringOrder[currentUser].get(record[3])
             if(product):
-                timeBetween = record[2] - userRecurringOrder[currentUser][record[3]]['latestTime']
-                totalTime = userRecurringOrder[currentUser][record[3]].get('timeBetweenTotal')
-                if(totalTime):
-                    timeBetweenTotal =  totalTime + timeBetween
-                    userRecurringOrder[currentUser].update({record[3]:{'amount':product['amount']+1,'latestTime':record[2],'timeBetweenTotal':timeBetweenTotal } })
-                else:
-                    userRecurringOrder[currentUser].update({record[3]:{'amount':product['amount']+1,'latestTime':record[2],'timeBetweenTotal':timeBetween } })
+                
+                if(record[2] != userRecurringOrder[currentUser][record[3]]['latestTime']):
+                    timeBetween = record[2] - userRecurringOrder[currentUser][record[3]]['latestTime']
+                    totalTime = userRecurringOrder[currentUser][record[3]].get('timeBetweenTotal')
+                    if(totalTime):
+                        timeBetweenTotal =  totalTime + timeBetween
+                        userRecurringOrder[currentUser].update({record[3]:{'amount':product['amount']+1,'latestTime':record[2],'timeBetweenTotal':timeBetweenTotal } })
+                    else:
+                        userRecurringOrder[currentUser].update({record[3]:{'amount':product['amount']+1,'latestTime':record[2],'timeBetweenTotal':timeBetween } })
                 
             else:
                 userRecurringOrder[currentUser].update({record[3]:{'amount':1,'latestTime':record[2] } })
