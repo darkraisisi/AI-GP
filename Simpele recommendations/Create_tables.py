@@ -53,6 +53,7 @@ def create_tables():
         )
         ''',
         '''
+        DROP TABLE IF EXISTS time_period CASCADE;
         CREATE TABLE time_period
         (
         product_id varchar,
