@@ -16,6 +16,8 @@ For the initial setup
 -Run all the other files in /simpele recommendations/ to add the recommendations to the database
 
 
+
+
 To start the webshop
 
 -Open a git bash window in the folder /webshop/
