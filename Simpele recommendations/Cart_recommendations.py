@@ -39,7 +39,7 @@ def insert_into_postgres(table, values):
 
 
 def cart_recommendation():
-    records = get("*", "products",'1000')
+    records = get("*", "products",'10000')
 
     recommended_ids = []
     already_added = []
@@ -53,5 +53,6 @@ def cart_recommendation():
                     and ([product_recommend[0],product_cart[0]]) not in already_added:
                 already_added.append([product_cart[0], product_recommend[0]])
                 insert_into_postgres("cart_recommendations", (product_cart[0],product_recommend[0]))
+                break
 
 cart_recommendation()
