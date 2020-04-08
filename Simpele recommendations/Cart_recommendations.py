@@ -28,7 +28,7 @@ def insert_into_postgres(table, values):
         cursor = connection.cursor()
 
         if table == "cart_recommendations":
-            cursor.execute("""INSERT INTO cart_recommendations VALUES({},{})""".format(values[0], values[1]))
+            cursor.execute("""INSERT INTO cart_recommendations VALUES('{}',{})""".format(values[0], values[1]))
 
         connection.commit()
         count = cursor.rowcount
@@ -39,7 +39,7 @@ def insert_into_postgres(table, values):
 
 
 def cart_recommendation():
-    records = get("*", "products",'10000')
+    records = get("*", "products",'1000')
 
     recommended_ids = []
     already_added = []
