@@ -53,6 +53,15 @@ def create_tables():
         )
         ''',
         '''
+        CREATE TABLE time_period
+        (
+        product_id varchar,
+        time varchar,
+        FOREIGN KEY (product_id) references products(id)
+        )
+        ''',
+        '''
+        DROP TABLE IF EXISTS most_bought_time CASCADE;
         CREATE TABLE most_bought_time
         (
         product_id varchar,
