@@ -32,7 +32,7 @@ def insert_into_postgres(table, values):
 
         connection.commit()
         count = cursor.rowcount
-        print(count, "Record inserted successfully into table")
+
 
     except (Exception, psycopg2.Error) as error:
         print("Failed to insert record into table", error)
@@ -43,7 +43,7 @@ def cart_recommendation():
 
     recommended_ids = []
     already_added = []
-
+    count = 0
     for product_cart in records:
         for product_recommend in records:
             # Categorie moet hetzelfde zijn, maar subcategorie anders
@@ -53,6 +53,9 @@ def cart_recommendation():
                     and ([product_recommend[0],product_cart[0]]) not in already_added:
                 already_added.append([product_cart[0], product_recommend[0]])
                 insert_into_postgres("cart_recommendations", (product_cart[0],product_recommend[0]))
+                count+=1
+                if count % 100 == 0:
+                    print(count, "Records inserted successfully into table")
                 break
 
 cart_recommendation()
