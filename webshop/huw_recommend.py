@@ -63,11 +63,14 @@ class Period(Resource):
         WHERE timeperiod = 'Lente'
         LIMIT 5
         """)
-        records = cursor.fetchone()
+        records = cursor.fetchall()
         cursor.close()
         connection.commit()
-        print(records[0])
-        return records, 200
+        record_output = []
+        for x in records:
+            record_output.append(x[0])
+
+        return record_output, 200
 
 
 api.add_resource(Collab, "/collab/<string:profileid>/<int:count>")
