@@ -223,6 +223,14 @@ class HUWebshop(object):
 
     """ ..:: Recommendation Functions ::.. """
 
+    def evalResponse(self,resp):
+        if resp.status_code == 200:
+            recs = eval(resp.content.decode())
+            queryfilter = {"_id": {"$in": recs}}
+            querycursor = self.database.products.find(queryfilter, self.productfields)
+            resultlist = list(map(self.prepproduct, list(querycursor)))
+            return resultlist
+
     def recommendations(self, count,functionName="collab"):
         """ This function returns the recommendations from the provided page
         and context, by sending a request to the designated recommendation
@@ -233,18 +241,28 @@ class HUWebshop(object):
         # http://127.0.0.1:5001/jsdfhsjkdfhksj123123/4
         if functionName == 'collab':
             resp = requests.get(self.recseraddress+"/collab/"+session['profile_id']+"/"+str(count))
+            return self.evalResponse(resp)
+            
         if functionName == 'cart':
-            resp = requests.get(self.recseraddress+"/cart/"+session['profile_id'])
+            resp = []
+            _ret = []
+            if session['shopping_cart']:
+                for i in session['shopping_cart']:
+                    partial_resp = requests.get(self.recseraddress+"/cart/"+str(i[0]))
+                    resp.append(partial_resp)
+                    
+                for i in resp:
+                    recs = eval(i.content.decode())
+                    _ret.append(recs)
+
+                queryfilter = {"_id": {"$in": _ret}}
+                querycursor = self.database.products.find(queryfilter, self.productfields)
+                return list(map(self.prepproduct, list(querycursor)))
+            else:
+                return []
         if functionName == 'reccuring':
             resp = requests.get(self.recseraddress+"/reccuring/"+session['profile_id']+"/"+str(datetime.now()))
-
-        if resp.status_code == 200:
-            recs = eval(resp.content.decode())
-            queryfilter = {"_id": {"$in": recs}}
-            querycursor = self.database.products.find(queryfilter, self.productfields)
-            resultlist = list(map(self.prepproduct, list(querycursor)))
-            return resultlist
-        return []
+            return self.evalResponse(resp)
 
     """ ..:: Full Page Endpoints ::.. """
 
@@ -275,7 +293,7 @@ class HUWebshop(object):
             'pend': skipindex + session['items_per_page'] if session['items_per_page'] > 0 else prodcount, \
             'prevpage': pagepath+str(page-1) if (page > 1) else False, \
             'nextpage': pagepath+str(page+1) if (session['items_per_page']*page < prodcount) else False, \
-            'r_products':self.recommendations(4,'reccuring'), \
+            'r_products':self.recommendations(4,'collab'), \
             'r_type':list(self.recommendationtypes.keys())[0],\
             'r_string':list(self.recommendationtypes.values())[0]\
             })

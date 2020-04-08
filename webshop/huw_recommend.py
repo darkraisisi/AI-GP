@@ -12,11 +12,11 @@ api = Api(app)
 # Since we are asked to pass a class rather than an instance of the class to the
 # add_resource method, we open the connection to the database outside of the
 # Recom class.
-connection = psycopg2.connect("dbname=OpisOp user=postgres password=wachtwoord")
-cursor = connection.cursor()
+connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
 
 class Collab(Resource):
     def get(self, profileid, count):
+        cursor = connection.cursor()
         # cursor.execute(f"""
         # SELECT DISTINCT collab_recommendations.product_recommendation FROM collab_recommendations
         # INNER JOIN profiles ON collab_recommendations.segment = profiles.segment
@@ -35,13 +35,13 @@ class Collab(Resource):
         LIMIT {1}
         """)
         records = cursor.fetchone()
-        print(records[0])
+        cursor.close()
+        connection.commit()
         return records[0], 200
 
 class Cart(Resource):
     def get(self, productid):
-
-        print(productid)
+        cursor = connection.cursor()
         cursor.execute(f"""
         SELECT product_recommendation_id
         FROM cart_recommendations
@@ -49,6 +49,8 @@ class Cart(Resource):
         LIMIT 1
         """)
         records = cursor.fetchone()
+        cursor.close()
+        connection.commit()
         print(records[0])
         return records[0], 200
 
