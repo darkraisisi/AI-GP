@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 # Connect to PostgreSQL DBMS
-con = psycopg2.connect("dbname = OpisOp user=postgres password='wachtwoord'")
+con = psycopg2.connect("dbname = OpisOp user=postgres password=root")
 con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 # Obtain a DB Cursor
@@ -12,6 +12,7 @@ cursor = con.cursor()
 def create_tables():
     commands = (
         '''
+        DROP TABLE IF EXISTS most_bought_day CASCADE;
         CREATE TABLE most_bought_day
         (
         product_id varchar,
@@ -20,6 +21,7 @@ def create_tables():
         )
         ''',
         '''
+        DROP TABLE IF EXISTS cart_recommendations CASCADE;
         CREATE TABLE cart_recommendations
         (
         product_cart_id varchar,
@@ -29,6 +31,7 @@ def create_tables():
         )
         ''',
         '''
+        DROP TABLE IF EXISTS most_bought_period CASCADE;
         CREATE TABLE most_bought_period
         (
         product_id varchar,
@@ -36,6 +39,17 @@ def create_tables():
         times_bought varchar,
         more_than_average varchar
         FOREIGN KEY (product_id) references products(id)
+        )
+        ''',
+        '''
+        DROP TABLE IF EXISTS weers_omstandigheden CASCADE;
+        CREATE TABLE weers_omstandigheden
+        (
+        date varchar,
+        location varchar,
+        temperature varchar,
+        humidity varchar,
+        product_id varchar
         )
         '''
     )
@@ -53,7 +67,4 @@ def create_tables():
     finally:
         if con is not None:
             con.close()
-
-
-
 
