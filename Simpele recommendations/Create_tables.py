@@ -51,6 +51,14 @@ def create_tables():
         humidity varchar,
         product_id varchar
         )
+        ''',
+        '''
+        CREATE TABLE most_bought_time
+        (
+        product_id varchar,
+        time varchar,
+        FOREIGN KEY (product_id) references products(id)
+        )
         '''
     )
 
