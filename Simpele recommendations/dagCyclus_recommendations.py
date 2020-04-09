@@ -8,7 +8,7 @@ def get(date1, date2):
         connection = psycopg2.connect("dbname = OpisOp user=postgres password='root'")
         cursor = connection.cursor()
 
-        postgreSQL_select_Query = "SELECT products_id FROM cart, sessions WHERE sessions_profiles_id = browser_id AND endtime BETWEEN "+"'"+date1+"'"+" AND "+"'"+date2+"'"
+        postgreSQL_select_Query = "SELECT c.products_id FROM cart AS c INNER JOIN sessions AS s ON c.sessions_profiles_id = s.browser_id WHERE s.endtime BETWEEN "+"'"+date1+"'"+" AND "+"'"+date2+"'"
 
 
         cursor.execute(postgreSQL_select_Query)

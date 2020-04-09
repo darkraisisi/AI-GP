@@ -3,6 +3,7 @@ from flask_restful import Api, Resource, reqparse
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from random import randrange
 
 import psycopg2
 
@@ -12,7 +13,7 @@ api = Api(app)
 # Since we are asked to pass a class rather than an instance of the class to the
 # add_resource method, we open the connection to the database outside of the
 # Recom class.
-connection = psycopg2.connect("dbname=OpisOp user=postgres password=wachtwoord")
+connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
 
 class Collab(Resource):
     def get(self, profileid, cat):
@@ -29,12 +30,12 @@ class Collab(Resource):
         # LIMIT 100
         # """)
         # Work in progress
-        sql = "SELECT collab_recommendations.product_recommendation FROM collab_recommendations INNER JOIN profiles ON collab_recommendations.segment = profiles.segment WHERE profiles.id = %s AND collab_recommendations.category LIKE %s "
+        sql = "SELECT collab_recommendations.product_recommendation FROM collab_recommendations INNER JOIN profiles ON collab_recommendations.segment = profiles.segment WHERE profiles.id = %s AND collab_recommendations.category LIKE %s LIMIT 10"
         cursor.execute(sql,((profileid),'%'+cat+'%'))
-        records = cursor.fetchone()
+        records = cursor.fetchall()
         cursor.close()
         connection.commit()
-        return records[0], 200
+        return records[randrange(len(records))][0], 200
 
 
 class Cart(Resource):

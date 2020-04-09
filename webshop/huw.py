@@ -313,7 +313,7 @@ class HUWebshop(object):
                                                                        page > 1) else False, \
                                                            'nextpage': pagepath + str(page + 1) if (session[
                                                                                                         'items_per_page'] * page < prodcount) else False, \
-                                                           'r_products': self.recommendations(4, 'period'), \
+                                                           'r_products': self.recommendations(4, 'collab'), \
                                                            'r_type': list(self.recommendationtypes.keys())[0], \
                                                            'r_string': list(self.recommendationtypes.values())[0] \
                                                            })

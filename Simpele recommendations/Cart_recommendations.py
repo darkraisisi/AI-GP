@@ -2,7 +2,7 @@ import psycopg2
 
 def get(colom, table, limit):
     try:
-        connection = psycopg2.connect("dbname = OpisOp user=postgres password='wachtwoord'")
+        connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
 
         cursor = connection.cursor()
 
@@ -24,7 +24,7 @@ def get(colom, table, limit):
 
 def insert_into_postgres(table, values):
     try:
-        connection = psycopg2.connect("dbname = OpisOp user=postgres password='wachtwoord'")
+        connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
         cursor = connection.cursor()
 
         if table == "cart_recommendations":

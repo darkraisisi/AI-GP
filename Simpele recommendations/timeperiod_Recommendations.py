@@ -8,10 +8,10 @@ from collections import Counter
 
 def get(date1, date2):
     try:
-        connection = psycopg2.connect("dbname = OpisOp user=postgres password='wachtwoord'")
+        connection = psycopg2.connect("dbname=OpisOp user=postgres password=root")
         cursor = connection.cursor()
 
-        postgreSQL_select_Query = "SELECT products_id FROM cart, sessions WHERE sessions_profiles_id = browser_id AND starttime BETWEEN "+"'"+date1+"'"+" AND "+"'"+date2+"'"
+        postgreSQL_select_Query = "SELECT c.products_id FROM cart AS c INNER JOIN sessions AS s ON c.sessions_profiles_id = s.browser_id WHERE s.starttime BETWEEN "+"'"+date1+"'"+" AND "+"'"+date2+"'"
 
 
         cursor.execute(postgreSQL_select_Query)
@@ -26,7 +26,7 @@ def get(date1, date2):
 
 def insert_into_postgres(table, values):
     try:
-        connection = psycopg2.connect("dbname = OpisOp user=postgres password='wachtwoord'")
+        connection = psycopg2.connect("dbname = OpisOp user=postgres password='root'")
         cursor = connection.cursor()
 
         if table == "most_bought_day":
